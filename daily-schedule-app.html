@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#667eea">
+    <title>Daily Schedule</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRhaWx5IFNjaGVkdWxlIiwKICAic2hvcnRfbmFtZSI6ICJTY2hlZHVsZSIsCiAgImRlc2NyaXB0aW9uIjogIlNpbXBsZSBkYWlseSBzY2hlZHVsZSBhcHAiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiM2NjdlZWEiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJZ2RtbGxkMEp2ZUQwaU1DQXdJREV5T0NBeE1qZ2lJR1pwYkd3OUltNXZibVVpSUhodGJHNXpQU0pvZEhSd09pOHZkM2QzTG5jekxtOXlaeTh5TURBd0wzTjJaeUkrUEhKbFkzUWdkMmxrZEdnOUlqRXlPQ0lnYUdWcFoyaDBQU0l4TWpnaUlISjRQU0l5TUNJZ1ptbHNiRDBpSTJZNFpqbG1ZU0l2UGp4eVpXTjBJSGc5SWpJMElpQjVQU0l5TkNJZ2QybGtkR2c5SWpnd0lpQm9aV2xuYUhROUlqRTJJaUJ5ZUQwaU9DSWdabWxzYkQwaUl6WTJOMlZsWVNJdlBqeHlaV04wSUhnOUlqSTBJaUI1UFNJMU5pSWdkMmxrZEdnOUlqZ3dJaUJvWldsbmFIUTlJakUySWlCeWVEMGlPQ0lnWm1sc2JEMGlJMk0wWXprMlppSXZQanh5WldOMElIZzlJakkwSWlCNVBTSTRPQ0lnZDJsa2RHZzlJamd3SWlCb1pXbG5hSFE5SWpFMklpQnllRDBpT0NJZ1ptbHNiRDBpSTJRMFpHTmhNU0l2UGp3dmMzWm5QZz09IiwKICAgICAgInNpemVzIjogIjEyOHgxMjgiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    
+    <!-- iOS specific -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjI0IiB5PSIyNCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE2IiByeD0iOCIgZmlsbD0iIzY2N2VlYSIvPjxyZWN0IHg9IjI0IiB5PSI1NiIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE2IiByeD0iOCIgZmlsbD0iI2M0Yzk2ZiIvPjxyZWN0IHg9IjI0IiB5PSI4OCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE2IiByeD0iOCIgZmlsbD0iI2Q0ZGNhMSIvPjwvc3ZnPg==">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* Prevent text selection on double tap */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Allow text selection only for inputs */
+        input {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            /* Prevent bounce scrolling on iOS */
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            height: calc(100vh - 40px);
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .date-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .schedule-grid {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .time-slot {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .time-slot:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-label {
+            width: 100px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .activity-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            /* Prevent iOS zoom on input focus */
+            touch-action: manipulation;
+        }
+
+        .activity-input:focus {
+            outline: none;
+            background: white;
+        }
+
+        .activity-input:not(:placeholder-shown) {
+            background: white;
+            font-weight: 500;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            /* Prevent iOS button styling */
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* iOS specific adjustments */
+        @supports (-webkit-touch-callout: none) {
+            .container {
+                height: calc(100vh - 40px - env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Scrollbar styling */
+        .schedule-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .schedule-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .schedule-grid::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .schedule-grid::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Filled slot animation */
+        @keyframes fillSlot {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .activity-input.filled {
+            animation: fillSlot 0.3s ease;
+        }
+
+        /* Install prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: translateY(200%);
+            transition: transform 0.3s ease;
+        }
+
+        .install-prompt.show {
+            transform: translateY(0);
+        }
+
+        .install-prompt h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .install-prompt p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Daily Schedule</h1>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+        
+        <div class="schedule-grid" id="scheduleGrid">
+            <!-- Time slots will be generated here -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="clearSchedule()">Clear All</button>
+            <button class="btn btn-primary" onclick="saveSchedule()">Save Schedule</button>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="installPrompt">
+        <h3>Install Daily Schedule</h3>
+        <p>Add this app to your home screen for the best experience!</p>
+        <button class="btn btn-primary" onclick="hideInstallPrompt()">Got it!</button>
+    </div>
+
+    <script>
+        // Initialize the schedule
+        let schedule = {};
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            // Create a simple service worker inline
+            const swContent = `
+                const CACHE_NAME = 'daily-schedule-v1';
+                const urlsToCache = ['/'];
+
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => response || fetch(event.request))
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swContent], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(registration => {
+                console.log('ServiceWorker registered');
+            }).catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        }
+
+        // Display current date
+        const currentDate = new Date();
+        document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Load saved schedule from localStorage
+        function loadSavedSchedule() {
+            const saved = localStorage.getItem('dailySchedule');
+            if (saved) {
+                const data = JSON.parse(saved);
+                // Only load if it's today's schedule
+                if (data.date === currentDate.toISOString().split('T')[0]) {
+                    schedule = data.activities || {};
+                }
+            }
+        }
+
+        // Generate time slots
+        function generateTimeSlots() {
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+            
+            for (let hour = 7; hour < 19; hour++) {
+                for (let minutes = 0; minutes < 60; minutes += 30) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    const displayTime = formatTime(hour, minutes);
+                    
+                    const slot = document.createElement('div');
+                    slot.className = 'time-slot';
+                    
+                    slot.innerHTML = `
+                        <div class="time-label">${displayTime}</div>
+                        <input 
+                            type="text" 
+                            class="activity-input" 
+                            placeholder="Click to add activity..."
+                            data-time="${timeString}"
+                            value="${schedule[timeString] || ''}"
+                        >
+                    `;
+                    
+                    grid.appendChild(slot);
+                }
+            }
+            
+            // Add event listeners
+            document.querySelectorAll('.activity-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const time = this.getAttribute('data-time');
+                    schedule[time] = this.value;
+                    
+                    if (this.value) {
+                        this.classList.add('filled');
+                    } else {
+                        this.classList.remove('filled');
+                    }
+                    
+                    // Auto-save on input
+                    saveSchedule(false);
+                });
+                
+                // Add filled class to inputs with values
+                if (input.value) {
+                    input.classList.add('filled');
+                }
+            });
+        }
+
+        // Format time for display
+        function formatTime(hour, minutes) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+        }
+
+        // Clear all activities
+        function clearSchedule() {
+            if (confirm('Are you sure you want to clear all activities?')) {
+                schedule = {};
+                localStorage.removeItem('dailySchedule');
+                document.querySelectorAll('.activity-input').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                });
+            }
+        }
+
+        // Save schedule to localStorage
+        function saveSchedule(showAlert = true) {
+            const scheduleData = {
+                date: currentDate.toISOString().split('T')[0],
+                activities: schedule
+            };
+            
+            localStorage.setItem('dailySchedule', JSON.stringify(scheduleData));
+            
+            if (showAlert) {
+                // Create a subtle notification instead of alert
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #4caf50;
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: slideDown 0.3s ease;
+                `;
+                notification.textContent = 'Schedule saved!';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 2000);
+            }
+        }
+
+        // Check if iOS and not in standalone mode
+        function checkInstallPrompt() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.navigator.standalone === true;
+            
+            if (isIOS && !isStandalone && !localStorage.getItem('hideInstallPrompt')) {
+                setTimeout(() => {
+                    document.getElementById('installPrompt').classList.add('show');
+                }, 2000);
+            }
+        }
+
+        function hideInstallPrompt() {
+            document.getElementById('installPrompt').classList.remove('show');
+            localStorage.setItem('hideInstallPrompt', 'true');
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the app
+        loadSavedSchedule();
+        generateTimeSlots();
+        checkInstallPrompt();
+    </script>
+</body>
+</html>
