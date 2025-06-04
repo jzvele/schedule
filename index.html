@@ -87,6 +87,22 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             overflow: hidden;
+            position: relative;
+        }
+
+        .time-slot.active {
+            background: #e8eaf6;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .time-slot.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #667eea;
         }
 
         .time-slot:hover {
@@ -94,13 +110,12 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .time-label {
-            width: 120px;
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 500;
-            text-align: center;
+        .time-slot.active .time-label {
+            background: linear-gradient(135deg, #5a72d6 0%, #6b4199 100%);
+        }
+
+        .time-slot.active .activity-input {
+            background: white;
         }
 
         .activity-input {
@@ -321,6 +336,8 @@
                     
                     const slot = document.createElement('div');
                     slot.className = 'time-slot';
+                    slot.setAttribute('data-hour', hour);
+                    slot.setAttribute('data-minutes', minutes);
                     
                     slot.innerHTML = `
                         <div class="time-label">${displayTime}</div>
@@ -466,10 +483,44 @@
         `;
         document.head.appendChild(style);
 
+        // Update current time highlight
+        function updateCurrentTimeHighlight() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinutes = now.getMinutes();
+            
+            // Remove previous active class
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('active');
+            });
+            
+            // Find and highlight current time slot
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                const slotHour = parseInt(slot.getAttribute('data-hour'));
+                const slotMinutes = parseInt(slot.getAttribute('data-minutes'));
+                
+                // Check if current time falls within this 30-minute slot
+                const slotStartTime = slotHour * 60 + slotMinutes;
+                const slotEndTime = slotStartTime + 30;
+                const currentTime = currentHour * 60 + currentMinutes;
+                
+                if (currentTime >= slotStartTime && currentTime < slotEndTime) {
+                    slot.classList.add('active');
+                    
+                    // Optionally scroll to active slot
+                    slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
         // Initialize the app
         loadSavedSchedule();
         generateTimeSlots();
         checkInstallPrompt();
+        updateCurrentTimeHighlight();
+        
+        // Update highlight every minute
+        setInterval(updateCurrentTimeHighlight, 60000);
     </script>
 </body>
 </html>
