@@ -95,7 +95,7 @@
         }
 
         .time-label {
-            width: 100px;
+            width: 120px;
             padding: 15px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -317,7 +317,7 @@
             for (let hour = 7; hour < 19; hour++) {
                 for (let minutes = 0; minutes < 60; minutes += 30) {
                     const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                    const displayTime = formatTime(hour, minutes);
+                    const displayTime = formatTimeRange(hour, minutes);
                     
                     const slot = document.createElement('div');
                     slot.className = 'time-slot';
@@ -360,11 +360,32 @@
             });
         }
 
-        // Format time for display
-        function formatTime(hour, minutes) {
-            const period = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-            return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+        // Format time range for display
+        function formatTimeRange(hour, minutes) {
+            const startPeriod = hour >= 12 ? 'PM' : 'AM';
+            const startHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            
+            // Calculate end time (30 minutes later)
+            let endHour = hour;
+            let endMinutes = minutes + 30;
+            if (endMinutes >= 60) {
+                endMinutes = 0;
+                endHour = hour + 1;
+            }
+            
+            const endPeriod = endHour >= 12 ? 'PM' : 'AM';
+            const displayEndHour = endHour === 0 ? 12 : endHour > 12 ? endHour - 12 : endHour;
+            
+            // Format the range
+            const start = `${startHour}:${minutes.toString().padStart(2, '0')}`;
+            const end = `${displayEndHour}:${endMinutes.toString().padStart(2, '0')}`;
+            
+            // Only show period once if both times are in same period
+            if (startPeriod === endPeriod) {
+                return `${start}-${end}${startPeriod}`;
+            } else {
+                return `${start}${startPeriod}-${end}${endPeriod}`;
+            }
         }
 
         // Clear all activities
